@@ -8,16 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const text_splitter_1 = require("langchain/text_splitter");
+const fs_1 = __importDefault(require("fs"));
+const config_1 = require("./config");
+const supabase_js_1 = require("@supabase/supabase-js");
+const supabase_1 = require("@langchain/community/vectorstores/supabase");
+const openai_1 = require("@langchain/openai");
 const Test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const filePath = 'file://example.txt';
-        const result = yield fetch(filePath);
-        const text = yield result.text();
-        const splitter = new text_splitter_1.RecursiveCharacterTextSplitter();
-        const output = yield splitter.createDocuments([text]);
-        console.log(output);
+        const result = yield fs_1.default.promises.readFile('../public/example.txt', 'utf8');
+        const splitter = new text_splitter_1.RecursiveCharacterTextSplitter({
+            chunkSize: 500,
+            chunkOverlap: 50
+        });
+        const outputText = yield splitter.createDocuments([result]);
+        const supabaseClient = (0, supabase_js_1.createClient)(config_1.supabaseURL, config_1.supabaseAPI);
+        yield supabase_1.SupabaseVectorStore.fromDocuments(outputText, new openai_1.OpenAIEmbeddings({ openAIApiKey: config_1.openAIAPI }), {
+            client: supabaseClient,
+            tableName: 'documents'
+        });
     }
     catch (err) {
         console.error(err);
