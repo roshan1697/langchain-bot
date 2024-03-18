@@ -17,7 +17,8 @@ const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
 const supabase_js_1 = require("@supabase/supabase-js");
 const supabase_1 = require("@langchain/community/vectorstores/supabase");
-const openai_1 = require("@langchain/openai");
+const ollama_1 = require("@langchain/community/embeddings/ollama");
+//const hf = new HfInference('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')
 const Test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield fs_1.default.promises.readFile('../public/example.txt', 'utf8');
@@ -27,10 +28,30 @@ const Test = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         const outputText = yield splitter.createDocuments([result]);
         const supabaseClient = (0, supabase_js_1.createClient)(config_1.supabaseURL, config_1.supabaseAPI);
-        yield supabase_1.SupabaseVectorStore.fromDocuments(outputText, new openai_1.OpenAIEmbeddings({ openAIApiKey: config_1.openAIAPI }), {
+        yield supabase_1.SupabaseVectorStore.fromDocuments(outputText, new ollama_1.OllamaEmbeddings, {
             client: supabaseClient,
             tableName: 'documents'
         });
+        // const response = await fetch(
+        //     "https://api-inference.huggingface.co/models/intfloat/e5-large-v2",
+        //     {
+        //         headers: { Authorization: "Bearer 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" },
+        //         method: "POST",
+        //         body: JSON.stringify(
+        //             {
+        //                 "source_sentence": "That is a happy person",
+        //                 "sentences": [
+        //                     "That is a happy dog",
+        //                     "That is a very happy person",
+        //                     "Today is a sunny day"
+        //                 ]
+        //             }
+        //         ),
+        //     }
+        // )
+        // const resultEmbedding = await response.json()
+        // console.log(resultEmbedding)
+        // 
     }
     catch (err) {
         console.error(err);

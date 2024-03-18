@@ -1,9 +1,12 @@
+import Chat from "./pages/chat"
 
 const App = ()=> {
 
   return (
     <>
-      <div className='text-3xl font-bold underline'>langchain bot
+      <div className='h-screen '>
+        <Chat/>
+          
         </div>
     </>
   )

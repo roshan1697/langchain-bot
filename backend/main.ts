@@ -1,9 +1,11 @@
 import {RecursiveCharacterTextSplitter} from 'langchain/text_splitter'
 import fs from 'fs'
-import { supabaseAPI,supabaseURL,openAIAPI } from './config'
+import { supabaseAPI,supabaseURL } from './config'
 import { createClient } from '@supabase/supabase-js'
 import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase'
-import { OpenAIEmbeddings } from '@langchain/openai'
+import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
+
+
 
 const Test = async() =>{
 
@@ -21,12 +23,16 @@ const Test = async() =>{
 
         await SupabaseVectorStore.fromDocuments(
             outputText,
-            new OpenAIEmbeddings({openAIApiKey :openAIAPI}),
+            new OllamaEmbeddings,
             {
                 client:supabaseClient,
                 tableName:'documents'
             }
         )
+       
+      
+      
+
     } 
     catch (err) {
      console.error(err)
