@@ -18,7 +18,6 @@ const config_1 = require("./config");
 const supabase_js_1 = require("@supabase/supabase-js");
 const supabase_1 = require("@langchain/community/vectorstores/supabase");
 const ollama_1 = require("@langchain/community/embeddings/ollama");
-//const hf = new HfInference('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')
 const Test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield fs_1.default.promises.readFile('../public/example.txt', 'utf8');
@@ -32,26 +31,6 @@ const Test = () => __awaiter(void 0, void 0, void 0, function* () {
             client: supabaseClient,
             tableName: 'documents'
         });
-        // const response = await fetch(
-        //     "https://api-inference.huggingface.co/models/intfloat/e5-large-v2",
-        //     {
-        //         headers: { Authorization: "Bearer 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" },
-        //         method: "POST",
-        //         body: JSON.stringify(
-        //             {
-        //                 "source_sentence": "That is a happy person",
-        //                 "sentences": [
-        //                     "That is a happy dog",
-        //                     "That is a very happy person",
-        //                     "Today is a sunny day"
-        //                 ]
-        //             }
-        //         ),
-        //     }
-        // )
-        // const resultEmbedding = await response.json()
-        // console.log(resultEmbedding)
-        // 
     }
     catch (err) {
         console.error(err);
