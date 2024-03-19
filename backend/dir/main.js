@@ -8,29 +8,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const text_splitter_1 = require("langchain/text_splitter");
-const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./config");
 const supabase_js_1 = require("@supabase/supabase-js");
 const supabase_1 = require("@langchain/community/vectorstores/supabase");
 const ollama_1 = require("@langchain/community/embeddings/ollama");
+const output_parsers_1 = require("@langchain/core/output_parsers");
+const ollama_2 = require("@langchain/community/chat_models/ollama");
+const prompts_1 = require("@langchain/core/prompts");
 const Test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield fs_1.default.promises.readFile('../public/example.txt', 'utf8');
-        const splitter = new text_splitter_1.RecursiveCharacterTextSplitter({
-            chunkSize: 500,
-            chunkOverlap: 50
-        });
-        const outputText = yield splitter.createDocuments([result]);
+        // const result = await fs.promises.readFile('../public/example.txt', 'utf8',)
+        // const splitter = new RecursiveCharacterTextSplitter({
+        //     chunkSize: 500,
+        //     chunkOverlap: 50
+        // })
+        // const outputText = await splitter.createDocuments([result])
         const supabaseClient = (0, supabase_js_1.createClient)(config_1.supabaseURL, config_1.supabaseAPI);
-        yield supabase_1.SupabaseVectorStore.fromDocuments(outputText, new ollama_1.OllamaEmbeddings, {
+        // await SupabaseVectorStore.fromDocuments(
+        //     outputText,
+        //     new OllamaEmbeddings,
+        //     {
+        //         client: supabaseClient,
+        //         tableName: 'documents'
+        //     }
+        // )
+        const embeddings = new ollama_1.OllamaEmbeddings({});
+        const vectorData = new supabase_1.SupabaseVectorStore(embeddings, {
             client: supabaseClient,
-            tableName: 'documents'
+            tableName: 'documents',
+            queryName: 'match_documents1'
         });
+        const retriever = vectorData.asRetriever();
+        const quest = 'given a question convert it to standalone question. question:{proDes} standalone question:';
+        const llm = new ollama_2.ChatOllama({});
+        const quesTemplate = prompts_1.PromptTemplate.fromTemplate(quest);
+        const chain = quesTemplate.pipe(llm).pipe(new output_parsers_1.StringOutputParser()).pipe(retriever);
+        const res = yield chain.invoke({
+            proDes: 'what are the effect of social media?'
+        });
+        console.log(res);
     }
     catch (err) {
         console.error(err);

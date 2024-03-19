@@ -4,15 +4,31 @@ import UserChat from "../components/userchat"
 const Chat = () => {
     return (
         <div className="h-full bg-gray-100 ">
-            <div className="w-1/2 mx-auto">
-
-                <div className="">
+            <div className="relative w-1/2 h-full mx-auto">
+                
+                <div className="max-h-full overflow-y-auto">
+                    <UserChat />
+                    <AiChat />
+                    <UserChat />
+                    <AiChat />
+                    <UserChat />
+                    <AiChat />
+                    <UserChat />
+                    <AiChat />
+                    <UserChat />
+                    <AiChat />
                     <UserChat />
                     <AiChat />
                 </div>
+
+
+
+
+
+
                 <div>
 
-                    <div className="px-4 pt-4 mb-2 border-gray-200">
+                    <div className="absolute bottom-0 w-full px-4 pt-4 bg-gray-100">
                         <div className="relative flex ">
 
                             <input type="text" placeholder="Write your message!" className="w-full py-3 pl-4 text-gray-600 placeholder-gray-600 bg-gray-100 border-4 rounded-xl focus:outline-none focus:placeholder-gray-400" />
@@ -30,6 +46,8 @@ const Chat = () => {
 
                 </div>
             </div>
+
+
         </div>
     )
 }
