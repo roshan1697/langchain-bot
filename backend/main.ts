@@ -8,6 +8,11 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 
 import { ChatOllama } from "@langchain/community/chat_models/ollama"
 import {PromptTemplate} from '@langchain/core/prompts'
+
+const combineText =<T extends {pageContent:string}>(docs:T[])=> {
+    return docs.map((doc)=>doc.pageContent).join('\n\n')
+}
+
 const Test = async () => {
 
     try {
@@ -32,16 +37,16 @@ const Test = async () => {
         // )
         const embeddings = new OllamaEmbeddings({})
         const vectorData = new SupabaseVectorStore(embeddings,{
-           client: supabaseClient,
+            client: supabaseClient,
             tableName:'documents',
             queryName:'match_documents1'
         })
-
+    
         const retriever = vectorData.asRetriever()
         const quest = 'given a question convert it to standalone question. question:{proDes} standalone question:'
         const llm = new ChatOllama({})
         const quesTemplate = PromptTemplate.fromTemplate(quest)
-        const chain = quesTemplate.pipe(llm).pipe(new StringOutputParser()).pipe(retriever)
+        const chain = quesTemplate.pipe(llm).pipe(new StringOutputParser()).pipe(retriever).pipe(combineText )
         const res = await chain.invoke({
             proDes:'what are the effect of social media?'
         })

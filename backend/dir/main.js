@@ -16,6 +16,9 @@ const ollama_1 = require("@langchain/community/embeddings/ollama");
 const output_parsers_1 = require("@langchain/core/output_parsers");
 const ollama_2 = require("@langchain/community/chat_models/ollama");
 const prompts_1 = require("@langchain/core/prompts");
+const combineText = (docs) => {
+    return docs.map((doc) => doc.pageContent).join('\n\n');
+};
 const Test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const result = await fs.promises.readFile('../public/example.txt', 'utf8',)
@@ -39,11 +42,14 @@ const Test = () => __awaiter(void 0, void 0, void 0, function* () {
             tableName: 'documents',
             queryName: 'match_documents1'
         });
+        // const textCombine = (docs:Record<string, any>[]):string => {
+        //     return docs.map((doc)=>doc.pageContent).join('\n\n')
+        // }
         const retriever = vectorData.asRetriever();
         const quest = 'given a question convert it to standalone question. question:{proDes} standalone question:';
         const llm = new ollama_2.ChatOllama({});
         const quesTemplate = prompts_1.PromptTemplate.fromTemplate(quest);
-        const chain = quesTemplate.pipe(llm).pipe(new output_parsers_1.StringOutputParser()).pipe(retriever);
+        const chain = quesTemplate.pipe(llm).pipe(new output_parsers_1.StringOutputParser()).pipe(retriever).pipe(combineText);
         const res = yield chain.invoke({
             proDes: 'what are the effect of social media?'
         });
